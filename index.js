@@ -1,9 +1,11 @@
 const fetch = require('node-fetch');
-const config = require('./config');
-const graphql_url = config.graphql_engine.graphql_url;
 
+let mGraphql_url = null;
 
 let jd_gql_helper = {
+    set_graphql_url: function (graphql_url) {
+        mGraphql_url = graphql_url;
+    },
     stringify_object_without_key_qoutes: function (object) {
         if (typeof object !== "object" || Array.isArray(object)) {
             // not an object, stringify using native function
