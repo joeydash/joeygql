@@ -1,10 +1,10 @@
 const fetch = require('node-fetch');
+let graphql_url = "";
 
-let mGraphql_url = null;
 
 let jd_gql_helper = {
-    set_graphql_url: function (graphql_url) {
-        mGraphql_url = graphql_url;
+    set_gql_url: (gql_url) => {
+        graphql_url = gql_url
     },
     stringify_object_without_key_qoutes: function (object) {
         if (typeof object !== "object" || Array.isArray(object)) {
