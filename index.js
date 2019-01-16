@@ -39,7 +39,7 @@ let joeyHasuraHelper = {
                             'x-Hasura-role': 'google',
                             'x-hasura-access-key': mHasuraAccessKey,
                             'x-hasura-google-id': tokenInfo.sub,
-                            'x-hasura-user-auth-token': hash(idToken)
+                            'x-hasura-user-h-id': tokenInfo.sub
                         },
                         body: JSON.stringify({query: query, variables: null})
                     }).then(data => resolve(data.json())).catch(err => reject(err));
