@@ -38,7 +38,6 @@ let joeyHasuraHelper = {
                         headers: {
                             'x-Hasura-role': 'google',
                             'x-hasura-access-key': mHasuraAccessKey,
-                            'x-hasura-google-id': tokenInfo.sub,
                             'x-hasura-user-h-id': tokenInfo.sub
                         },
                         body: JSON.stringify({query: query, variables: null})
@@ -46,6 +45,33 @@ let joeyHasuraHelper = {
                 }
             });
 
+        });
+    },
+    checkRole: (role, authToken) => {
+        return new Promise(function (resolve, reject) {
+
+            let query = '{\n' +
+                '  joey_user(where: {role: {_eq: "' + role + '"}, auth_token: {_eq: "' + authToken + '"}}) {\n' +
+                '    auth_token\n' +
+                '  }\n' +
+                '}';
+            fetch(mHasuraGraphqlUrl, {
+                method: "POST",
+                headers: {
+                    'x-Hasura-role': 'user',
+                    'x-hasura-access-key': mHasuraAccessKey,
+                    'x-hasura-user-auth-token': authToken
+                },
+                body: JSON.stringify({query: query, variables: null})
+            }).then(data => data.json())
+                .then(data => {
+                    if (data.data.joey_user.length > 0) {
+                        resolve(data);
+                    } else {
+                        reject({error: "no user found"});
+                    }
+                })
+                .catch(err => reject(err));
         });
     },
     requestDBAnonymous: (body) => {
