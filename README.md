@@ -1,6 +1,7 @@
 # joeygql
 
-#### This is used as a additional supportive library above hasura-graphql-engine (open-source)
+[![npm version](https://badge.fury.io/js/joeygql.svg)](https://badge.fury.io/js/joeygql)
+##### This is used as a additional supportive library above hasura-graphql-engine (open-source)
 
 * First install docker compose
 
