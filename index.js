@@ -26,7 +26,7 @@ let joeyHasuraHelper = {
                     console.log(err);
                 } else {
                     let query = 'mutation {\n' +
-                        '  insert_user_auth(objects: [{h_id: "' + tokenInfo.sub + '", auth_token: "' + hash(idToken) + '"}], on_conflict: {constraint: joey_user_h_id_key, update_columns: [auth_token]}) {\n' +
+                        '  insert_user_auth(objects: [{h_id: "' + tokenInfo.sub + '", auth_token: "' + hash(idToken) + '"}], on_conflict: {constraint: user_auth_h_id_key, update_columns: [auth_token]}) {\n' +
                         '    affected_rows\n' +
                         '    returning {\n' +
                         '      h_id\n' +
