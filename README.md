@@ -5,7 +5,7 @@
 
 * [Deploy hasura server](https://docs.hasura.io/1.0/graphql/manual/index.html)
 
-* Then make a table 
+* Then make a table (postgres)
  ```postgresql
 CREATE TABLE public.user_auth (
 	id serial NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE public.user_auth (
 
 ```
 
-* metadata.json
+* metadata.json (hasura)
 ```json
 {"functions":[],"remote_schemas":[],"query_collections":[],"allowlist":[],"tables":[{"table":"user_auth","object_relationships":[],"array_relationships":[],"insert_permissions":[{"role":"google","comment":null,"permission":{"set":{},"check":{},"columns":["auth_token","h_id","role"]}}],"select_permissions":[{"role":"google","comment":null,"permission":{"allow_aggregations":false,"columns":["auth_token","h_id","id","role"],"filter":{"h_id":{"_eq":"X-HASURA-USER-H-ID"}}}}],"update_permissions":[{"role":"google","comment":null,"permission":{"set":{},"columns":["auth_token","role"],"filter":{"h_id":{"_eq":"X-HASURA-USER-H-ID"}}}}],"delete_permissions":[],"event_triggers":[]}],"query_templates":[]}
 ```

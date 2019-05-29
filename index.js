@@ -6,7 +6,7 @@ const cloudinary = require('cloudinary');
 
 let mHasuraGraphqlUrl = mGoogleApiClientId = mHasuraAccessKey = mCloudinaryApiId = "";
 
-let joeyHasuraHelper = {
+let joeygql = {
     setHasuraGraphqlUrl: (hasuraGraphqlUrl, hasuraAccessKey) => {
         mHasuraGraphqlUrl = hasuraGraphqlUrl;
         mHasuraAccessKey = hasuraAccessKey;
@@ -54,7 +54,7 @@ let joeyHasuraHelper = {
         return new Promise(function (resolve, reject) {
 
             let query = '{\n' +
-                '  joey_user(where: {role: {_eq: "' + role + '"}, auth_token: {_eq: "' + authToken + '"}}) {\n' +
+                '  user_auth(where: {role: {_eq: "' + role + '"}, auth_token: {_eq: "' + authToken + '"}}) {\n' +
                 '    auth_token\n' +
                 '  }\n' +
                 '}';
@@ -68,7 +68,7 @@ let joeyHasuraHelper = {
                 body: JSON.stringify({query: query, variables: null})
             }).then(data => data.json())
                 .then(data => {
-                    if (data.data.joey_user.length > 0) {
+                    if (data.data.user_auth.length > 0) {
                         resolve(data);
                     } else {
                         reject({error: "no user found"});
@@ -127,4 +127,4 @@ let joeyHasuraHelper = {
         });
     }
 };
-module.exports = joeyHasuraHelper;
+module.exports = joeygql;
