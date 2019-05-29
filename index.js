@@ -1,19 +1,22 @@
 const fetch = require('node-fetch');
 const verifier = require('google-id-token-verifier');
 const hash = require('object-hash');
-let mHasuraGraphqlUrl = "";
-let mGoogleApiClientId = "";
-let mHasuraAccessKey = "";
+const cloudinary = require('cloudinary');
+
+
+let mHasuraGraphqlUrl = mGoogleApiClientId = mHasuraAccessKey = mCloudinaryApiId = "";
 
 let joeyHasuraHelper = {
-    setHasuraGraphqlUrl: (hasuraGraphqlUrl) => {
-        mHasuraGraphqlUrl = hasuraGraphqlUrl
+    setHasuraGraphqlUrl: (hasuraGraphqlUrl, hasuraAccessKey) => {
+        mHasuraGraphqlUrl = hasuraGraphqlUrl;
+        mHasuraAccessKey = hasuraAccessKey;
     },
     setGoogleApiClientId: (googleApiClientId) => {
         mGoogleApiClientId = googleApiClientId
     },
-    setHasuraAccessKey: (hasuraAccessKey) => {
-        mHasuraAccessKey = hasuraAccessKey
+    setCloudinaryApiId: (cloudinaryApiId) => {
+        mCloudinaryApiId = cloudinaryApiId;
+        cloudinary.config(cloudinaryApiId);
     },
     signInGoogle(idToken) {
         return new Promise(function (resolve, reject) {
@@ -23,7 +26,7 @@ let joeyHasuraHelper = {
                     console.log(err);
                 } else {
                     let query = 'mutation {\n' +
-                        '  insert_joey_user(objects: [{h_id: "' + tokenInfo.sub + '", auth_token: "' + hash(idToken) + '"}], on_conflict: {constraint: joey_user_h_id_key, update_columns: [auth_token]}) {\n' +
+                        '  insert_user_auth(objects: [{h_id: "' + tokenInfo.sub + '", auth_token: "' + hash(idToken) + '"}], on_conflict: {constraint: joey_user_h_id_key, update_columns: [auth_token]}) {\n' +
                         '    affected_rows\n' +
                         '    returning {\n' +
                         '      h_id\n' +
@@ -101,6 +104,27 @@ let joeyHasuraHelper = {
             }).then(data => resolve(data.json())).catch(err => reject(err));
         });
 
+    },
+    checkifExist: (value, arr) => {
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i] === value) {
+                return true;
+            }
+        }
+        return false;
+    },
+    uploadToCloudinary: (folderName, file) => {
+        return new Promise(function (resolve, reject) {
+            cloudinary.v2.uploader.upload(file,
+                {folder: folderName},
+                function (error, result) {
+                    if (!error) {
+                        resolve(result.json());
+                    } else {
+                        reject(error);
+                    }
+                });
+        });
     }
 };
 module.exports = joeyHasuraHelper;
