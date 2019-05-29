@@ -5,10 +5,30 @@
 
 * [Deploy hasura server](https://docs.hasura.io/1.0/graphql/manual/index.html)
 
+* Then make a table 
+ ```postgresql
+CREATE TABLE public.user_auth (
+	id serial NOT NULL,
+	h_id text NOT NULL,
+	auth_token text NOT NULL,
+	"role" text NOT NULL DEFAULT 'user'::text,
+	CONSTRAINT user_auth_auth_token_key UNIQUE (auth_token),
+	CONSTRAINT user_auth_h_id_key UNIQUE (h_id),
+	CONSTRAINT user_auth_id_key UNIQUE (id),
+	CONSTRAINT user_auth_pkey PRIMARY KEY (id, h_id)
+);
+
+```
+
+* metadata.json
+```json
+{"functions":[],"remote_schemas":[],"query_collections":[],"allowlist":[],"tables":[{"table":"user_auth","object_relationships":[],"array_relationships":[],"insert_permissions":[{"role":"google","comment":null,"permission":{"set":{},"check":{},"columns":["auth_token","h_id","role"]}}],"select_permissions":[{"role":"google","comment":null,"permission":{"allow_aggregations":false,"columns":["auth_token","h_id","id","role"],"filter":{"h_id":{"_eq":"X-HASURA-USER-H-ID"}}}}],"update_permissions":[{"role":"google","comment":null,"permission":{"set":{},"columns":["auth_token","role"],"filter":{"h_id":{"_eq":"X-HASURA-USER-H-ID"}}}}],"delete_permissions":[],"event_triggers":[]}],"query_templates":[]}
+```
 * Install 
 ```bash 
 npm -i joeyql
 ```
+
 
 * Import module
 ```node
