@@ -5,6 +5,7 @@
 [![npm version](https://badge.fury.io/js/joeygql.svg)](https://badge.fury.io/js/joeygql)  [![Build Status](https://secure.travis-ci.org/auth0/node-jsonwebtoken.svg?branch=master)](http://travis-ci.org/auth0/node-jsonwebtoken) [![Dependency Status](https://david-dm.org/joeydash/joeygql.svg)](https://david-dm.org/auth0/node-jsonwebtoken) [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fjoeydash%2Fjoeygql.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fjoeydash%2Fjoeygql?ref=badge_shield) [![GitHub license](https://img.shields.io/github/license/joeydash/joeygql)](https://github.com/joeydash/joeygql/blob/master/LICENSE)
 
 ##### This is used as a additional supportive library above hasura-graphql-engine (open-source)
+## [Documentation](http://momentjs.com/docs/)
 
 * [Deploy hasura server](https://docs.hasura.io/1.0/graphql/manual/index.html)
 
