@@ -1,7 +1,8 @@
 # joeygql
 
+[![Gitter](https://badges.gitter.im/joeygql/community.svg)](https://gitter.im/joeygql/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
- [![npm version](https://badge.fury.io/js/joeygql.svg)](https://badge.fury.io/js/joeygql)  [![Build Status](https://secure.travis-ci.org/auth0/node-jsonwebtoken.svg?branch=master)](http://travis-ci.org/auth0/node-jsonwebtoken) [![Dependency Status](https://david-dm.org/joeydash/joeygql.svg)](https://david-dm.org/auth0/node-jsonwebtoken) [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fjoeydash%2Fjoeygql.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fjoeydash%2Fjoeygql?ref=badge_shield)
+[![npm version](https://badge.fury.io/js/joeygql.svg)](https://badge.fury.io/js/joeygql)  [![Build Status](https://secure.travis-ci.org/auth0/node-jsonwebtoken.svg?branch=master)](http://travis-ci.org/auth0/node-jsonwebtoken) [![Dependency Status](https://david-dm.org/joeydash/joeygql.svg)](https://david-dm.org/auth0/node-jsonwebtoken) [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fjoeydash%2Fjoeygql.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fjoeydash%2Fjoeygql?ref=badge_shield) [![GitHub license](https://img.shields.io/github/license/joeydash/joeygql)](https://github.com/joeydash/joeygql/blob/master/LICENSE)
 
 ##### This is used as a additional supportive library above hasura-graphql-engine (open-source)
 
@@ -55,6 +56,17 @@ router.post('/sign_in', function (req, res, next) {
     joeygql.signInGoogle(req.body.id_token).then(data => res.json(data)).catch(e => res.json(e));
 });
 ```
+
+
+## [Changelog](https://github.com/joeydash/joeygql/blob/master/CHANGELOG.md)
+
+## [Contributing](https://github.com/joeydash/joeygql/blob/master/CONTRIBUTING.md) [![Open Source Helpers](https://www.codetriage.com/joeydash/joeygql/badges/users.svg)](https://www.codetriage.com/joeydash/joeygql) [![CLA assistant](https://cla-assistant.io/readme/badge/joeydash/joeygql)](https://cla-assistant.io/joeydash/joeygql)
+
+We're looking for co-maintainers! If you want to become a master of time please
+write to [joeydash](https://github.com/joeydash).
+
+In addition to contributing code, you can help to triage issues. This can include reproducing bug reports, or asking for vital information such as version numbers or reproduction instructions. If you would like to start triaging issues, one easy way to get started is to [subscribe to moment/moment on CodeTriage](https://www.codetriage.com/joeydash/joeygql).
+
 
 ## License
 
