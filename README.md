@@ -1,6 +1,9 @@
-# joeygql
+# jsonwebtoken
 
-[![npm version](https://badge.fury.io/js/joeygql.svg)](https://badge.fury.io/js/joeygql)
+| **Version** | **Build** | **Dependency** |
+|-----------|-----------|---------------|
+| [![npm version](https://badge.fury.io/js/joeygql.svg)](https://badge.fury.io/js/joeygql) | [![Build Status](https://secure.travis-ci.org/auth0/node-jsonwebtoken.svg?branch=master)](http://travis-ci.org/auth0/node-jsonwebtoken) | [![Dependency Status](https://david-dm.org/joeydash/joeygql.svg)](https://david-dm.org/auth0/node-jsonwebtoken) |
+
 ##### This is used as a additional supportive library above hasura-graphql-engine (open-source)
 
 * [Deploy hasura server](https://docs.hasura.io/1.0/graphql/manual/index.html)
