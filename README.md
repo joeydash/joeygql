@@ -61,7 +61,7 @@ router.post('/sign_in', function (req, res, next) {
 
 ## [Changelog](https://github.com/joeydash/joeygql/wiki/Changelog)
 
-## [Contributing](https://github.com/joeydash/joeygql/blob/master/.github/CONTRIBUTING.md) [![Open Source Helpers](https://www.codetriage.com/joeydash/joeygql/badges/users.svg)](https://www.codetriage.com/joeydash/joeygql) [![CLA assistant](https://cla-assistant.io/readme/badge/joeydash/joeygql)](https://cla-assistant.io/joeydash/joeygql)
+## [Contributing](https://github.com/joeydash/joeygql/blob/master/.github/CONTRIBUTING.md) [![Open Source Helpers](https://www.codetriage.com/joeydash/joeygql/badges/users.svg)](https://www.codetriage.com/joeydash/joeygql)  [![CLA assistant](https://cla-assistant.io/readme/badge/joeydash/joeygql)](https://cla-assistant.io/joeydash/joeygql) 
 
 We're looking for co-maintainers! If you want to become a master of time please
 write to [joeydash](https://github.com/joeydash).
