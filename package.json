@@ -1,6 +1,6 @@
 {
   "name": "joeygql",
-  "version": "2.2.0",
+  "version": "0.0.1",
   "description": "Use it as a wrapper above the Hasura-GraphQL engine",
   "main": "index.js",
   "scripts": {
