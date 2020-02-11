@@ -2,10 +2,14 @@ const fetch = require('node-fetch');
 const verifier = require('google-id-token-verifier');
 const hash = require('object-hash');
 const cloudinary = require('cloudinary');
-const _ = require('underscore');
+const _ = require('lodash');
 
 
-let mHasuraGraphqlUrl = mGoogleApiClientId = mHasuraAccessKey = mCloudinaryApiId = "";
+let mHasuraGraphqlUrl = "";
+let mGoogleApiClientId = "";
+let mHasuraAccessKey = "";
+let mCloudinaryApiId = "";
+let mQueryUrl = "";
 let isDebug = false;
 
 let joeygql = {
@@ -15,6 +19,9 @@ let joeygql = {
     setHasuraGraphqlUrl: (hasuraGraphqlUrl, hasuraAccessKey) => {
         mHasuraGraphqlUrl = hasuraGraphqlUrl;
         mHasuraAccessKey = hasuraAccessKey;
+    },
+    setQueryUrl: (query_url) => {
+        mQueryUrl = query_url;
     },
     setGoogleApiClientId: (googleApiClientId) => {
         mGoogleApiClientId = googleApiClientId
@@ -30,58 +37,124 @@ let joeygql = {
                     reject(err);
                     console.log(err);
                 } else {
-                    let query =
-                        'mutation {\n' +
-                        '  insert_user_auth(objects: {h_id: "' + tokenInfo.sub + '", auth_token: "' + hash(idToken) + '", email: "' + tokenInfo.email + '", username: "' + tokenInfo.name + '", dp: "' + tokenInfo.picture + '"}, on_conflict: {constraint: user_auth_h_id_key, update_columns: auth_token}) {\n' +
-                        '    returning {\n' +
-                        '      id\n' +
-                        '      h_id\n' +
-                        '      auth_token\n' +
-                        '      email\n' +
-                        '      username\n' +
-                        '      carrier\n' +
-                        '      dp\n' +
+                    let _query = 'query MyQuery {\n' +
+                        '  __typename\n' +
+                        '  user_auth_aggregate {\n' +
+                        '    aggregate {\n' +
+                        '      count(distinct: true, columns: id)\n' +
                         '    }\n' +
-                        '    affected_rows\n' +
                         '  }\n' +
                         '}';
-                    if (isDebug) console.log("query_string: ", query);
+
                     fetch(mHasuraGraphqlUrl, {
                         method: "POST",
                         headers: {
-                            'x-Hasura-role': 'google',
-                            'x-hasura-access-key': mHasuraAccessKey,
-                            'x-hasura-user-h-id': tokenInfo.sub
+                            'X-Hasura-Role': 'google',
+                            'X-Hasura-Access-Key': mHasuraAccessKey,
+                            'X-Hasura-User-H-Id': tokenInfo.sub
                         },
-                        body: JSON.stringify({query: query, variables: null})
+                        body: JSON.stringify({query: _query, variables: null})
                     })
-                        .then(data => data.json())
-                        .then(data => {
-                            let roles_mapping_query =
-                                'mutation {\n' +
-                                '  insert_t_roles_users_mapping(objects: {role_id: 1, user_id: ' + data.data.insert_user_auth.returning[0].id + '}, on_conflict: {constraint: t_roles_users_mapping_un, update_columns: role_id}) {\n' +
-                                '    affected_rows\n' +
-                                '  }\n' +
-                                '}\n';
-                            if (isDebug) console.log("query_string: ", roles_mapping_query);
-                            fetch(mHasuraGraphqlUrl, {
-                                method: "POST",
-                                headers: {
-                                    'x-Hasura-role': 'admin',
-                                    'x-hasura-access-key': mHasuraAccessKey,
-                                    'x-hasura-user-h-id': tokenInfo.sub
-                                },
-                                body: JSON.stringify({query: roles_mapping_query, variables: null})
-                            })
-                                .then(second_data => second_data.json())
-                                .then(second_data => {
-                                    if (isDebug) console.log("result: ", JSON.stringify(second_data));
-                                    resolve(data);
-                                }).catch(err => reject(err));
-                        }).catch(err => reject(err));
+                        .then(_data => {
+                            return _data.json()
+                        })
+                        .then(_data => {
+                            if (isDebug) console.log(JSON.stringify(_data));
+                            if (_data.data.user_auth_aggregate.aggregate.count > 0) {
+                                let __query = 'mutation MyMutation {\n' +
+                                    '  __typename\n' +
+                                    '  update_user_auth(_set: {auth_token: "' + hash(idToken) + '"}, where: {h_id: {_eq: "' + tokenInfo.sub + '"}}) {\n' +
+                                    '    returning {\n' +
+                                    '      h_id\n' +
+                                    '      id\n' +
+                                    '      carrier\n' +
+                                    '      auth_token\n' +
+                                    '      dp\n' +
+                                    '      email\n' +
+                                    '      username\n' +
+                                    '    }\n' +
+                                    '  }\n' +
+                                    '}';
+
+                                fetch(mHasuraGraphqlUrl, {
+                                    method: "POST",
+                                    headers: {
+                                        'X-Hasura-Role': 'google',
+                                        'X-Hasura-Access-Key': mHasuraAccessKey,
+                                        'X-Hasura-User-H-Id': tokenInfo.sub
+                                    },
+                                    body: JSON.stringify({query: __query, variables: null})
+                                })
+                                    .then(__data => {
+                                        return __data.json()
+                                    })
+                                    .then(__data => {
+                                        if (isDebug) console.log(JSON.stringify(__data));
+                                        resolve(__data.data.update_user_auth.returning[0]);
+                                    })
+                                    .catch(err => reject(err));
+                            } else {
+                                let __query = 'mutation MyMutation {\n' +
+                                    '  __typename\n' +
+                                    '  insert_user_auth(objects: {h_id: "' + tokenInfo.sub + '", auth_token: "' + hash(idToken) + '", email: "' + tokenInfo.email + '", username: "' + tokenInfo.name + '", dp: "' + tokenInfo.picture + '", carrier: "google"}, on_conflict: {constraint: user_auth_h_id_key, update_columns: auth_token}) {\n' +
+                                    '    returning {\n' +
+                                    '      id\n' +
+                                    '    }\n' +
+                                    '    affected_rows' +
+                                    '  }\n' +
+                                    '}';
+                                if (isDebug) console.log("query_string: ", __query);
+                                fetch(mHasuraGraphqlUrl, {
+                                    method: "POST",
+                                    headers: {
+                                        'X-Hasura-Role': 'google',
+                                        'X-Hasura-Access-Key': mHasuraAccessKey,
+                                        'X-Hasura-User-H-Id': tokenInfo.sub
+                                    },
+                                    body: JSON.stringify({query: __query, variables: null})
+                                })
+                                    .then(__data => {
+                                        return __data.json()
+                                    })
+                                    .then(__data => {
+                                        if (isDebug) console.log(JSON.stringify(__data));
+                                        let ___query = 'mutation MyMutation {\n' +
+                                            '  __typename\n' +
+                                            '  insert_t_roles_users_mapping(objects: {role_id: 1, user_id: '+__data.data.insert_user_auth.returning[0].id+'}) {\n' +
+                                            '    returning {\n' +
+                                            '      user_auth {\n' +
+                                            '        auth_token\n' +
+                                            '        carrier\n' +
+                                            '        dp\n' +
+                                            '        email\n' +
+                                            '        h_id\n' +
+                                            '        id\n' +
+                                            '        username\n' +
+                                            '      }\n' +
+                                            '    }\n' +
+                                            '  }\n' +
+                                            '}';
+                                        if (isDebug) console.log("query_string: ", ___query);
+                                        fetch(mHasuraGraphqlUrl, {
+                                            method: "POST",
+                                            headers: {
+                                                'X-Hasura-Role': 'google',
+                                                'X-Hasura-Access-Key': mHasuraAccessKey,
+                                                'X-Hasura-User-H-Id': tokenInfo.sub
+                                            },
+                                            body: JSON.stringify({query: ___query, variables: null})
+                                        })
+                                            .then(___data => ___data.json())
+                                            .then(___data => {
+                                                if (isDebug) console.log(JSON.stringify(___data));
+                                                resolve(___data.data.insert_t_roles_users_mapping.returning[0]);
+                                            }).catch(err => reject(err));
+                                    }).catch(err => reject(err));
+                            }
+                        })
+                        .catch(err => reject(err));
                 }
             });
-
         });
     },
     checkRole: (role, authToken) => {
@@ -98,9 +171,9 @@ let joeygql = {
             fetch(mHasuraGraphqlUrl, {
                 method: "POST",
                 headers: {
-                    'x-Hasura-role': 'admin',
-                    'x-hasura-access-key': mHasuraAccessKey,
-                    'x-hasura-user-auth-token': authToken
+                    'X-Hasura-Role': 'admin',
+                    'X-Hasura-Access-Key': mHasuraAccessKey,
+                    'X-Hasura-User-Auth-Token': authToken
                 },
                 body: JSON.stringify({query: query, variables: null})
             }).then(data => data.json())
@@ -121,8 +194,8 @@ let joeygql = {
             fetch(mHasuraGraphqlUrl, {
                 method: "POST",
                 headers: {
-                    'x-Hasura-role': 'anonymous',
-                    'x-hasura-access-key': mHasuraAccessKey,
+                    'X-Hasura-Role': 'anonymous',
+                    'X-Hasura-Access-Key': mHasuraAccessKey,
                 },
                 body: JSON.stringify({query: body, variables: null})
             }).then(data => {
@@ -140,14 +213,58 @@ let joeygql = {
             fetch(mHasuraGraphqlUrl, {
                 method: "POST",
                 headers: {
-                    'x-Hasura-role': role,
-                    'x-hasura-access-key': mHasuraAccessKey,
-                    'x-hasura-user-auth-token': authToken
+                    'X-Hasura-Role': role,
+                    'X-Hasura-Access-Key': mHasuraAccessKey,
+                    'X-Hasura-User-Auth-Token': authToken
                 },
                 body: JSON.stringify({query: body, variables: null})
             }).then(data => {
                 if (isDebug) console.log("result: ", JSON.stringify(data));
                 resolve(data.json())
+            }).catch(err => reject(err));
+        });
+
+    },
+    queryWithRole: (role, authToken, body) => {
+        return new Promise(function (resolve, reject) {
+            if (isDebug) console.log("role: ", role);
+            if (isDebug) console.log("auth_token: ", authToken);
+            if (isDebug) console.log("body: ", JSON.stringify(body));
+            fetch(mQueryUrl, {
+                method: "POST",
+                headers: {
+                    'X-Hasura-Role': role,
+                    'X-Hasura-Access-Key': mHasuraAccessKey,
+                    'X-Hasura-User-Auth-Token': authToken
+                },
+                body: JSON.stringify(body)
+            }).then(data => {
+                if (isDebug) console.log("result: ", JSON.stringify(data));
+                resolve(data.json());
+            }).catch(err => reject(err));
+        });
+
+    },
+    queryWithRoleAndSiteHostName: (role, authToken, hostName, body) => {
+        return new Promise(function (resolve, reject) {
+            if (isDebug) {
+                console.log("role: ", role);
+                console.log("auth_token: ", authToken);
+                console.log("host_name: ", hostName);
+                console.log("body: ", JSON.stringify(body))
+            }
+            fetch(mQueryUrl, {
+                method: "POST",
+                headers: {
+                    'X-Hasura-Role': role,
+                    'X-Hasura-Access-Key': mHasuraAccessKey,
+                    'X-Hasura-User-Auth-Token': authToken,
+                    'X-Hasura-Site-Host-Name': '%' + hostName + '%'
+                },
+                body: JSON.stringify(body)
+            }).then(data => {
+                if (isDebug) console.log("result: ", JSON.stringify(data));
+                resolve(data.json());
             }).catch(err => reject(err));
         });
 
@@ -166,7 +283,7 @@ let joeygql = {
                 {folder: folderName},
                 function (error, result) {
                     if (!error) {
-                        if (isDebug) console.log("result: ", JSON.stringify(data));
+                        if (isDebug) console.log("result: ", JSON.stringify(result));
                         resolve(result.json());
                     } else {
                         reject(error);
@@ -185,7 +302,7 @@ let joeygql = {
         return new Promise(function (resolve, reject) {
             if (isDebug) console.log("host: ", host);
             let mQuery = '{\n' +
-                '  site_data {\n' +
+                '  t_site_data {\n' +
                 '    key\n' +
                 '    value\n' +
                 '  }\n' +
@@ -194,16 +311,16 @@ let joeygql = {
             fetch(mHasuraGraphqlUrl, {
                 method: "POST",
                 headers: {
-                    'x-Hasura-role': 'website',
-                    'x-hasura-access-key': mHasuraAccessKey,
-                    'X-Hasura-Website-host': '%' + host + '%'
+                    'X-Hasura-Role': 'website',
+                    'X-Hasura-Access-Key': mHasuraAccessKey,
+                    'X-Hasura-Website-Host': '%' + host + '%'
                 },
                 body: JSON.stringify({query: mQuery, variables: null})
             })
                 .then(data => data.json())
                 .then(data => {
                     if (isDebug) console.log("result: ", JSON.stringify(data));
-                    resolve(joeygql.getObjectFromArray(data.data.site_data));
+                    resolve(joeygql.getObjectFromArray(data.data.t_site_data));
                 }).catch(err => reject(err));
         });
     }
