@@ -166,7 +166,6 @@ let joeygql = {
                 '    auth_token\n' +
                 '  }\n' +
                 '}';
-            console.log(query);
             if (isDebug) console.log("query_string: ", query);
             fetch(mHasuraGraphqlUrl, {
                 method: "POST",
